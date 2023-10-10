@@ -6,7 +6,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 def task6():
     
-    image_vectors = [doc["color_moments_feature_descriptor"] for doc in collection.find()]
+    image_vectors = [doc["resnet50_fc_feature_descriptor"] for doc in collection.find()]
     num_images = len(image_vectors)
     image_similarity_matrix = np.zeros((num_images, num_images))
     
@@ -23,7 +23,7 @@ def task6():
                 image_similarity_matrix[j, i] = similarity 
             print(i, j)
             
-    file_path_cm = "C:/Khadyu/ASU/Fall 2023/Multimedia & Web Databases/Project/Phase2/cse515-project/Code/phase2/image_image_sm_cm.csv"
+    file_path_cm = "C:/Khadyu/ASU/Fall 2023/Multimedia & Web Databases/Project/Phase2/cse515-project/Code/phase2/image_image_sm_fc.csv"
     np.savetxt(file_path_cm, image_similarity_matrix, delimiter=",")
 
 if __name__ == "__main__":

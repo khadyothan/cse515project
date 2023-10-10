@@ -8,6 +8,9 @@ import sys
 sys.path.append('C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code')
 import dimensionality_reduction.SVD.svd as svd
 import dimensionality_reduction.NNMF.nnmf as nnmf
+import dimensionality_reduction.CP.cp as cp
+import dimensionality_reduction.KMEANS.kmeans as kmeans
+import dimensionality_reduction.KMEANS.kmeans2 as kmeans2
 import phase2.task5 as task5
 import phase1.print_top_k_images as print_top_k_images
 import extracting_feature_space.color_moments as color_moments
@@ -48,7 +51,8 @@ def LS3(query_image_data, query_feature_model, dimredtech, k, K):
     elif dimredtech == 3:
         similar_images = {}  
     elif dimredtech == 4:
-        similar_images = {}
+        print(dimredtech)
+        latent_space_matrix = kmeans.kmeans(feature_model_data_matrix, k) 
     else:
         print("Enter valid dimensionality reduction technique choice!!")
         
@@ -72,8 +76,42 @@ def LS3(query_image_data, query_feature_model, dimredtech, k, K):
     
 
 def LS2(query_image_data, query_feature_model, k, K):
+    query_image_vector, feature_model_data_file_path = None, None
+    if query_feature_model == "color_moments_feature_descriptor":
+        query_image_vector = color_moments.color_moments(query_image_data)
+        feature_model_data_file_path = "cm"
+    elif query_feature_model == "hog_feature_descriptor":
+        query_image_vector = HOG.HOG(query_image_data)
+        feature_model_data_file_path = "hog"
+    else :
+        query_layer3_vector, query_avgpool_vector, query_fc_vector = resnet_features.resnet_features(query_image_data)
+        if query_feature_model == "resnet50_layer3_feature_descriptor":
+            query_image_vector = query_layer3_vector
+            feature_model_data_file_path = "layer3"
+        elif query_feature_model == "resnet50_avgpool_feature_descriptor":
+            query_image_vector = query_avgpool_vector
+            feature_model_data_file_path = "avgpool"
+        else:
+            query_image_vector = query_fc_vector
+            feature_model_data_file_path = "fc"
+            
+    query_image_vector = np.ravel(query_image_vector)
+    feature_model_data_matrix = np.loadtxt(f"C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code\dimensionality_reduction\data_matrix_{feature_model_data_file_path}.csv", delimiter=',')
+    print(feature_model_data_matrix.shape)
+    combined_matrix = np.vstack((query_image_vector, feature_model_data_matrix))
+    latent_space_matrix = cp.cp(combined_matrix, k)
     
-    return True
+    query_image_vector_ls = latent_space_matrix[0]
+    database_vectors_ls = latent_space_matrix[1:]
+    distances = np.linalg.norm(database_vectors_ls - query_image_vector_ls, axis=1)
+    similar_images = {}
+    for i, distance in enumerate(distances):
+        similar_images[i*2] = distance   
+    similar_images = dict(sorted(similar_images.items(), key=lambda x: x[1]))
+    top_k_similar_images = dict(list(similar_images.items())[:K])
+    images_to_display = {image_id: {'image': image, 'distance': top_k_similar_images[image_id]} for image_id, (image, label) in enumerate(dataset) if image_id in top_k_similar_images}
+    print_top_k_images.print_images(images_to_display, "Heading", target_size=(224, 224))
+    
 
 
 def LS1(query_image_data, query_feature_model, dimredtech, k, K):
@@ -109,7 +147,7 @@ def LS1(query_image_data, query_feature_model, dimredtech, k, K):
     elif dimredtech == 3:
         similar_images = {}  
     elif dimredtech == 4:
-        similar_images = {}
+        latent_space_matrix = kmeans2.kmeans2(feature_model_data_matrix, k)
     else:
         print("Enter valid dimensionality reduction technique choice!!")
         

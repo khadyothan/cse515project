@@ -29,24 +29,23 @@ def calculateImageIDWeightPairs(feature_descriptor_ls, feature_descriptor):
     with open(f"Code\dimensionality_reduction\SVD\sorted_image_id_weights_{feature_descriptor}.txt", "w") as file:
         for image_id, weight in sorted_image_id_weight_pairs_cm:
             file.write(f"Image ID: {image_id}, Weight: {weight}\n")
-       
-# data_matrix = np.loadtxt("Code\dimensionality_reduction\data_matrix_cm.csv", delimiter=',')     
-# cm_ls = svd(data_matrix)
-# data_matrix = np.loadtxt("Code\dimensionality_reduction\data_matrix_hog.csv", delimiter=',')   
-# hog_ls = svd(data_matrix)
-# data_matrix = np.loadtxt("Code\dimensionality_reduction\data_matrix_fc.csv", delimiter=',')   
-# fc_ls = svd(data_matrix)
+            
+if __name__ == "__main__":
+    data_matrix = np.loadtxt("Code\dimensionality_reduction\data_matrix_cm.csv", delimiter=',')     
+    cm_ls = svd(data_matrix)
+    data_matrix = np.loadtxt("Code\dimensionality_reduction\data_matrix_hog.csv", delimiter=',')   
+    hog_ls = svd(data_matrix)
+    data_matrix = np.loadtxt("Code\dimensionality_reduction\data_matrix_fc.csv", delimiter=',')   
+    fc_ls = svd(data_matrix)
 
-# calculateImageIDWeightPairs(cm_ls, "cm")
-# calculateImageIDWeightPairs(hog_ls, "hog")
-# calculateImageIDWeightPairs(fc_ls, "fc")
+    calculateImageIDWeightPairs(cm_ls, "cm")
+    calculateImageIDWeightPairs(hog_ls, "hog")
+    calculateImageIDWeightPairs(fc_ls, "fc")
 
-# file_path_cm_ls = "Code\dimensionality_reduction\SVD\cm_ls.npy"
-# file_path_hog_ls = "Code\dimensionality_reduction\SVD\hog_ls.npy"
-# file_path_fc_ls = "Code\\dimensionality_reduction\\SVD\\fc_ls.npy"
+    file_path_cm_ls = "Code\dimensionality_reduction\SVD\cm_ls.npy"
+    file_path_hog_ls = "Code\dimensionality_reduction\SVD\hog_ls.npy"
+    file_path_fc_ls = "Code\\dimensionality_reduction\\SVD\\fc_ls.npy"
 
-# np.savetxt(file_path_cm_ls, cm_ls, delimiter=",")
-# np.savetxt(file_path_hog_ls, hog_ls, delimiter=",")
-# np.savetxt(file_path_fc_ls, fc_ls, delimiter=",")
-
-
+    np.savetxt(file_path_cm_ls, cm_ls, delimiter=",")
+    np.savetxt(file_path_hog_ls, hog_ls, delimiter=",")
+    np.savetxt(file_path_fc_ls, fc_ls, delimiter=",")
