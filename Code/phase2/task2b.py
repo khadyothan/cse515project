@@ -41,7 +41,7 @@ if __name__ == "__main__":
         query_image_file = input("Give the query image file path: ")
     else: 
         print("Enter valid query type!")
-
+        
     k = input("Enter k: ")
     
     task2b(query_image_id, query_image_file, k)

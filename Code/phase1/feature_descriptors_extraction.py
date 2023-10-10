@@ -1,7 +1,9 @@
-import Code.extracting_feature_spce.color_moments as color_moments
+import sys
+sys.path.append('C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code')
+import extracting_feature_space.color_moments as color_moments
 import numpy as np
-import Code.extracting_feature_spce.HOG as HOG
-import Code.extracting_feature_spce.resnet_features as resnet_features
+import extracting_feature_space.HOG as HOG
+import extracting_feature_space.resnet_features as resnet_features
 from PIL import Image
 
 # Function to extract and store feature descriptors in a MongoDB collection
