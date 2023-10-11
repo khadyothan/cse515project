@@ -1,11 +1,14 @@
+import sys
+sys.path.append('/Users/rohitbathi/Desktop/Masters/CSE_MWD/project/cse515project-master/Code')
+
 import pymongo
 import torchvision.datasets as datasets
 import numpy as np
 import torch
 from PIL import Image
 from sklearn.metrics.pairwise import cosine_similarity
-import sys
-sys.path.append('C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code')
+import time
+
 import dimensionality_reduction.SVD.svd as svd
 import dimensionality_reduction.NNMF.nnmf as nnmf
 import dimensionality_reduction.CP.cp as cp
@@ -114,7 +117,7 @@ def LS2(query_image_data, query_feature_model, k, K):
     
 
 
-def LS1(query_image_data, query_feature_model, dimredtech, k, K):
+def LS1(id, query_image_data, query_feature_model, dimredtech, k, K):
     
     query_image_vector, feature_model_data_file_path = None, None
     if query_feature_model == "color_moments_feature_descriptor":
@@ -136,7 +139,7 @@ def LS1(query_image_data, query_feature_model, dimredtech, k, K):
             feature_model_data_file_path = "fc"
             
     query_image_vector = np.ravel(query_image_vector)
-    feature_model_data_matrix = np.loadtxt(f"C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code\dimensionality_reduction\data_matrix_{feature_model_data_file_path}.csv", delimiter=',')
+    feature_model_data_matrix = np.loadtxt(f"/Users/rohitbathi/Desktop/Masters/CSE_MWD/project/cse515project-master/Code/dimensionality_reduction/data_matrix_{feature_model_data_file_path}.csv", delimiter=',')
     print(feature_model_data_matrix.shape)
     combined_matrix = np.vstack((query_image_vector, feature_model_data_matrix))
     
@@ -147,12 +150,15 @@ def LS1(query_image_data, query_feature_model, dimredtech, k, K):
     elif dimredtech == 3:
         similar_images = {}  
     elif dimredtech == 4:
-        latent_space_matrix = kmeans2.kmeans2(feature_model_data_matrix, k)
+        start = time.time()
+        latent_space_matrix = kmeans2.kmeans2(feature_model_data_matrix.tolist(), k)
+        # latent_space_matrix = kmeans.kmeans(feature_model_data_matrix, k)
+        print(f'kmeans CM LS calc time: {time.time()-start}')
     else:
         print("Enter valid dimensionality reduction technique choice!!")
         
-    query_image_vector_ls = latent_space_matrix[0]
-    database_vectors_ls = latent_space_matrix[1:]
+    query_image_vector_ls = latent_space_matrix[int(id/2)]
+    database_vectors_ls = latent_space_matrix
     distances = np.linalg.norm(database_vectors_ls - query_image_vector_ls, axis=1)
     similar_images = {}
     for i, distance in enumerate(distances):
@@ -183,7 +189,7 @@ def task7(query_image_id, query_image_file, query_latent_semantics, K):
     k = int(input("Enter k value for dimensionality reduction: "))
     
     if query_latent_semantics == 1:
-        LS1(query_image_data, query_feature_model, dimredtech, k, K)
+        LS1(query_image_id, query_image_data, query_feature_model, dimredtech, k, K)
     elif query_latent_semantics == 2:
         LS2(query_image_data, query_feature_model, k, K)
     elif query_latent_semantics == 3:
@@ -202,7 +208,7 @@ if __name__ == "__main__":
     collection2 = db["labelrepresentativeimages"]
     collection2_name = "labelrepresentativeimages"
 
-    caltech101_directory = "C:/Khadyu/ASU/Fall 2023/Multimedia & Web Databases/Project/Phase1/data"
+    caltech101_directory = "/Users/rohitbathi/Desktop/Masters/CSE_MWD/project/cse515project-master/Code"
     dataset = datasets.Caltech101(caltech101_directory, download=False)
     data_loader = torch.utils.data.DataLoader(dataset, batch_size=4, shuffle=True, num_workers=8)
     

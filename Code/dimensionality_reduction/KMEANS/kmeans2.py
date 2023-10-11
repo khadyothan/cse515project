@@ -2,15 +2,25 @@ import numpy as np
 import pymongo
 
 import numpy as np
-import random
 import os
+import random
 
 from sklearn.cluster import KMeans
 
 def cluster_calc(x: list, cent_no: int):
     
+    ##### using kmeans from sklearn
+    # res = KMeans(
+    #     n_clusters= cent_no,
+    #     random_state= 0,
+    #     n_init='auto'
+    # ).fit(x)
+    
+    # return res.cluster_centers_, res
+    
     ##### from scratch
     cent_temp = centroids = initialize_kmeans_plusplus(np.array(x), cent_no).tolist()
+    # cent_temp = centroids = random.sample(x, cent_no)
     cluster_array = [[] for i in range(cent_no)]
     repeat_flag = True
     
@@ -38,23 +48,6 @@ def cluster_calc(x: list, cent_no: int):
         
     return centroids, cluster_array
     
-    
-def kmeans_reduce(x: list, k):
-    
-    ####### distance measure dimensionality reduction approach
-    centroids, cluster_array = cluster_calc(x, k)
-    print(f'centroids: {centroids}')
-    res = []
-    for i in x:
-        temp = []
-        for j in centroids:
-            temp.append(vector_euclid(i, j))
-            # print(temp)
-        res.append(temp)
-        # print(res)
-    store_ls_kmeans(res)
-    return res
-
 
 def initialize_kmeans_plusplus(points, K, c_dist=np.linalg.norm):
     centers = []
@@ -77,10 +70,12 @@ def initialize_kmeans_plusplus(points, K, c_dist=np.linalg.norm):
 
 
 def vector_euclid(x, y):
-    dumsum = 0
-    for i,j in zip(x, y):
-        dumsum += (i - j)**2
-    return np.sqrt(dumsum)
+    # dumsum = 0
+    # for i,j in zip(x, y):
+    #     dumsum += (i - j)**2
+    # return np.sqrt(dumsum)
+    
+    return np.linalg.norm(np.array(x) - np.array(y))
 
 def centroid_check(prev, new):
     # flag = False
@@ -102,7 +97,7 @@ def store_ls_kmeans(x: list) -> None:
 
 def kmeans2(data_matrix, k):
     centroids, cluster_array = cluster_calc(data_matrix, k)
-    # print(f'centroids: {centroids}')
+    print(f'shape of centroids: {np.array(centroids).shape}')
     data_matrix_ls = []
     for i in data_matrix:
         temp = []
@@ -123,6 +118,6 @@ if __name__ == "__main__":
     data_matrix = np.loadtxt("C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code\dimensionality_reduction\data_matrix_cm.csv", delimiter=',')     
     cm_ls = kmeans2(data_matrix, 10)
     
-    file_path_cm_ls = "C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code\dimensionality_reduction\KMEANS\cm_ls"
+    file_path_cm_ls = "/Users/rohitbathi/Desktop/Masters/CSE_MWD/project/cse515project-master/Outputs/kmeans/cm_ls.csv"
     np.savetxt(file_path_cm_ls, cm_ls, delimiter=",")
     # calculateImageIDWeightPairs(file_path_cm_ls)

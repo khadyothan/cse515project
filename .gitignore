@@ -1,4 +1,7 @@
 *.csv
 *.npy
 *.txt
+.DS_Store
 data/
+caltech101/
+__pycache__/
