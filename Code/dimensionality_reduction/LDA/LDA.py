@@ -4,6 +4,7 @@ import numpy as np
 from pprint import pprint
 import gensim
 import json
+from json import encoder
 #Connecting to mongoDB client and creating database and collections
 client = MongoClient("localhost", 27017)
 DB = client.caltech101db
@@ -117,14 +118,12 @@ def retrieve_LDA_latent_samantics(feature_descriptor,k):
     lda_model = gensim.models.LdaModel(corpus=corpus,id2word=id2num,num_topics=k)
     # Print the Keyword in the 10 topics
     #pprint(lda_model.print_topics())
-    topic_distribution = lda_model.print_topics(num_words=30)
+    saved_data = dict()
+    topic_distribution = lda_model.print_topics(num_words=len(id2num))
     latent_semantics = dict()
     for i in range(k):
         latent_semantics[topic_distribution[i][0]] = topic_distribution[i][1]
-    file_name = feature_descriptor + "latentSemantics.json"
-    with open(file_name, "w") as outfile:
-        json.dump(latent_semantics, outfile)
-
+    saved_data["latent_semantics"] = latent_semantics
     doc_topics = lda_model.get_document_topics(corpus)
     image_weight_matrix = []
     for img in doc_topics:
@@ -133,7 +132,17 @@ def retrieve_LDA_latent_samantics(feature_descriptor,k):
             temp_dict[i] = 0
         for topic,weight in img:
             temp_dict[topic] = weight
-        image_weight_matrix.append(sorted(temp_dict.items(), key=lambda x:x[1],reverse=True))
+        temp_dict = sorted(temp_dict.items(), key=lambda x:x[1],reverse=True)
+        for i,item in enumerate(temp_dict):
+            it = list(item)
+            it[1] = str(it[1])
+            temp_dict[i] = tuple(it)
+        image_weight_matrix.append(temp_dict)
     print(image_weight_matrix)
+    saved_data["image_weight_matrix"] = image_weight_matrix
+    saved_data["id2num"] = id2num
+    file_path = "/Users/lalitarvind/Downloads/MWD_Team_project_v1/cse515project/Code/dimensionality_reduction/LDA/"+ feature_descriptor + "_latentSemantics.json"
+    with open(file_path, "w") as outfile:
+        json.dump(saved_data, outfile)
         
-retrieve_LDA_latent_samantics("resnet50_layer3_feature_descriptor",10)
+#retrieve_LDA_latent_samantics("resnet50_layer3_feature_descriptor",10)
