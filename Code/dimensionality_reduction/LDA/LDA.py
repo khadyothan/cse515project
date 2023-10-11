@@ -114,9 +114,7 @@ def retrieve_LDA_latent_samantics(feature_descriptor,k):
     id2num = create_id2num(start_index[feature_descriptor],features)
     corpus = create_corpus(id2num,features)
     # Build LDA model
-    print("im here")
-    lda_model = gensim.models.LdaMulticore(corpus=corpus,id2word=id2num,num_topics=k)
-    print("LDA completed")
+    lda_model = gensim.models.LdaModel(corpus=corpus,id2word=id2num,num_topics=k)
     # Print the Keyword in the 10 topics
     #pprint(lda_model.print_topics())
     topic_distribution = lda_model.print_topics(num_words=30)
