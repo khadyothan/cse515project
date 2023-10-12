@@ -1,5 +1,6 @@
+from file_paths import *
 import sys
-sys.path.append('/Users/rohitbathi/Desktop/Masters/CSE_MWD/project/cse515project-master/Code')
+sys.path.append(code_dir)
 
 import pymongo
 import torchvision.datasets as datasets
@@ -12,8 +13,7 @@ import time
 import dimensionality_reduction.SVD.svd as svd
 import dimensionality_reduction.NNMF.nnmf as nnmf
 import dimensionality_reduction.CP.cp as cp
-import dimensionality_reduction.KMEANS.kmeans as kmeans
-import dimensionality_reduction.KMEANS.kmeans2 as kmeans2
+import Code.dimensionality_reduction.KMEANS.kmeans as kmeans
 import phase2.task5 as task5
 import phase1.print_top_k_images as print_top_k_images
 import extracting_feature_space.color_moments as color_moments
@@ -99,7 +99,8 @@ def LS2(query_image_data, query_feature_model, k, K):
             feature_model_data_file_path = "fc"
             
     query_image_vector = np.ravel(query_image_vector)
-    feature_model_data_matrix = np.loadtxt(f"C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code\dimensionality_reduction\data_matrix_{feature_model_data_file_path}.csv", delimiter=',')
+    # feature_model_data_matrix = np.loadtxt(f"C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code\dimensionality_reduction\data_matrix_{feature_model_data_file_path}.csv", delimiter=',')
+    feature_model_data_matrix = np.loadtxt(os.path.join(data_matrix_root_path, f'data_matrix_{feature_model_data_file_path}.csv'), delimiter=',')
     print(feature_model_data_matrix.shape)
     combined_matrix = np.vstack((query_image_vector, feature_model_data_matrix))
     latent_space_matrix = cp.cp(combined_matrix, k)
@@ -139,7 +140,8 @@ def LS1(id, query_image_data, query_feature_model, dimredtech, k, K):
             feature_model_data_file_path = "fc"
             
     query_image_vector = np.ravel(query_image_vector)
-    feature_model_data_matrix = np.loadtxt(f"/Users/rohitbathi/Desktop/Masters/CSE_MWD/project/cse515project-master/Code/dimensionality_reduction/data_matrix_{feature_model_data_file_path}.csv", delimiter=',')
+    # feature_model_data_matrix = np.loadtxt(f"/Users/rohitbathi/Desktop/Masters/CSE_MWD/project/cse515project-master/Code/dimensionality_reduction/data_matrix_{feature_model_data_file_path}.csv", delimiter=',')
+    feature_model_data_matrix = np.loadtxt(os.path.join(data_matrix_root_path, f'data_matrix_{feature_model_data_file_path}.csv'), delimiter=',')
     print(feature_model_data_matrix.shape)
     combined_matrix = np.vstack((query_image_vector, feature_model_data_matrix))
     
@@ -151,7 +153,7 @@ def LS1(id, query_image_data, query_feature_model, dimredtech, k, K):
         similar_images = {}  
     elif dimredtech == 4:
         start = time.time()
-        latent_space_matrix = kmeans2.kmeans2(feature_model_data_matrix.tolist(), k)
+        latent_space_matrix = kmeans.kmeans2(feature_model_data_matrix.tolist(), k)
         # latent_space_matrix = kmeans.kmeans(feature_model_data_matrix, k)
         print(f'kmeans CM LS calc time: {time.time()-start}')
     else:
@@ -208,7 +210,7 @@ if __name__ == "__main__":
     collection2 = db["labelrepresentativeimages"]
     collection2_name = "labelrepresentativeimages"
 
-    caltech101_directory = "/Users/rohitbathi/Desktop/Masters/CSE_MWD/project/cse515project-master/Code"
+    caltech101_directory = dataset_path
     dataset = datasets.Caltech101(caltech101_directory, download=False)
     data_loader = torch.utils.data.DataLoader(dataset, batch_size=4, shuffle=True, num_workers=8)
     

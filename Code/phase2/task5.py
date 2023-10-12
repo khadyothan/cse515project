@@ -1,3 +1,5 @@
+from file_paths import *
+
 import pymongo
 import torch
 import torchvision.datasets as datasets
@@ -46,26 +48,31 @@ if __name__ == "__main__":
     collection = db["phase2trainingdataset"]
     collection_name = "phase2trainingdataset"
 
-    caltech101_directory = "C:/Khadyu/ASU/Fall 2023/Multimedia & Web Databases/Project/Phase1/data"
+    caltech101_directory = dataset_path
     dataset = datasets.Caltech101(caltech101_directory, download=False)
     data_loader = torch.utils.data.DataLoader(dataset, batch_size=4, shuffle=True, num_workers=8)
 
     label_label_sm_cm = task5("color_moments_feature_descriptor", [], collection)
-    file_path_cm = "C:/Khadyu/ASU/Fall 2023/Multimedia & Web Databases/Project/Phase2/cse515-project/Code/phase2/label_label_sm/label_label_sm_cm.csv"
+    # file_path_cm = "C:/Khadyu/ASU/Fall 2023/Multimedia & Web Databases/Project/Phase2/cse515-project/Code/phase2/label_label_sm/label_label_sm_cm.csv"
+    file_path_cm = os.path.join(lblb_sim_root_path, 'label_label_sm_cm.csv')
     np.savetxt(file_path_cm, label_label_sm_cm, delimiter=",")
     
     label_label_sm_hog = task5("hog_feature_descriptor", [], collection)
-    file_path_cm = "C:/Khadyu/ASU/Fall 2023/Multimedia & Web Databases/Project/Phase2/cse515-project/Code/phase2/label_label_sm/label_label_sm_hog.csv"
-    np.savetxt(file_path_cm, label_label_sm_hog, delimiter=",")
+    # file_path_hog = "C:/Khadyu/ASU/Fall 2023/Multimedia & Web Databases/Project/Phase2/cse515-project/Code/phase2/label_label_sm/label_label_sm_hog.csv"
+    file_path_hog = os.path.join(lblb_sim_root_path, 'label_label_sm_hog.csv')
+    np.savetxt(file_path_hog, label_label_sm_hog, delimiter=",")
     
     label_label_sm_layer3 = task5("resnet50_layer3_feature_descriptor", [], collection)
-    file_path_cm = "C:/Khadyu/ASU/Fall 2023/Multimedia & Web Databases/Project/Phase2/cse515-project/Code/phase2/label_label_sm/label_label_sm_layer3.csv"
-    np.savetxt(file_path_cm, label_label_sm_layer3, delimiter=",")
+    # file_path_layer3 = "C:/Khadyu/ASU/Fall 2023/Multimedia & Web Databases/Project/Phase2/cse515-project/Code/phase2/label_label_sm/label_label_sm_layer3.csv"
+    file_path_layer3 = os.path.join(lblb_sim_root_path, 'label_label_sm_layer3.csv')
+    np.savetxt(file_path_layer3, label_label_sm_layer3, delimiter=",")
     
     label_label_sm_avgpool = task5("resnet50_avgpool_feature_descriptor", [], collection)
-    file_path_cm = "C:/Khadyu/ASU/Fall 2023/Multimedia & Web Databases/Project/Phase2/cse515-project/Code/phase2/label_label_sm/label_label_sm_avgpool.csv"
-    np.savetxt(file_path_cm, label_label_sm_avgpool, delimiter=",")
+    # file_path_avgpool = "C:/Khadyu/ASU/Fall 2023/Multimedia & Web Databases/Project/Phase2/cse515-project/Code/phase2/label_label_sm/label_label_sm_avgpool.csv"
+    file_path_avgpool = os.path.join(lblb_sim_root_path, 'label_label_sm_avgpool.csv')
+    np.savetxt(file_path_avgpool, label_label_sm_avgpool, delimiter=",")
     
     label_label_sm_fc = task5("resnet50_fc_feature_descriptor", [], collection)
-    file_path_cm = "C:/Khadyu/ASU/Fall 2023/Multimedia & Web Databases/Project/Phase2/cse515-project/Code/phase2/label_label_sm/label_label_sm_fc.csv"
-    np.savetxt(file_path_cm, label_label_sm_fc, delimiter=",")
+    # file_path_fc = "C:/Khadyu/ASU/Fall 2023/Multimedia & Web Databases/Project/Phase2/cse515-project/Code/phase2/label_label_sm/label_label_sm_fc.csv"
+    file_path_fc = os.path.join(lblb_sim_root_path, 'label_label_sm_fc.csv')
+    np.savetxt(file_path_fc, label_label_sm_fc, delimiter=",")

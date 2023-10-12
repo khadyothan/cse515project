@@ -1,3 +1,5 @@
+from file_paths import *
+
 import numpy as np
 
 def svd(data_matrix, k):
@@ -26,25 +28,33 @@ def calculateImageIDWeightPairs(feature_descriptor_ls, feature_descriptor):
         
     sorted_image_id_weight_pairs_cm = sorted(image_id_weight_pairs, key=lambda x: x[1], reverse=True)
 
-    with open(f"Code\dimensionality_reduction\SVD\sorted_image_id_weights_{feature_descriptor}.txt", "w") as file:
+    # with open(f"Code\dimensionality_reduction\SVD\sorted_image_id_weights_{feature_descriptor}.txt", "w") as file:
+    with open(os.path.join(id_weight_root_path, 'svd', f"{feature_descriptor}_id_weights.txt"), "w") as file:
         for image_id, weight in sorted_image_id_weight_pairs_cm:
             file.write(f"Image ID: {image_id}, Weight: {weight}\n")
             
 if __name__ == "__main__":
-    data_matrix = np.loadtxt("Code\dimensionality_reduction\data_matrix_cm.csv", delimiter=',')     
+    # data_matrix = np.loadtxt("Code\dimensionality_reduction\data_matrix_cm.csv", delimiter=',')     
+    data_matrix = np.loadtxt(os.path.join(data_matrix_root_path, 'data_matrix_cm.csv'), delimiter=',')     
     cm_ls = svd(data_matrix)
-    data_matrix = np.loadtxt("Code\dimensionality_reduction\data_matrix_hog.csv", delimiter=',')   
+    # data_matrix = np.loadtxt("Code\dimensionality_reduction\data_matrix_hog.csv", delimiter=',')   
+    data_matrix = np.loadtxt(os.path.join(data_matrix_root_path, 'data_matrix_hog.csv'), delimiter=',')     
     hog_ls = svd(data_matrix)
-    data_matrix = np.loadtxt("Code\dimensionality_reduction\data_matrix_fc.csv", delimiter=',')   
+    # data_matrix = np.loadtxt("Code\dimensionality_reduction\data_matrix_fc.csv", delimiter=',')
+    data_matrix = np.loadtxt(os.path.join(data_matrix_root_path, 'data_matrix_fc.csv'), delimiter=',')
+       
     fc_ls = svd(data_matrix)
 
     calculateImageIDWeightPairs(cm_ls, "cm")
     calculateImageIDWeightPairs(hog_ls, "hog")
     calculateImageIDWeightPairs(fc_ls, "fc")
 
-    file_path_cm_ls = "Code\dimensionality_reduction\SVD\cm_ls.npy"
-    file_path_hog_ls = "Code\dimensionality_reduction\SVD\hog_ls.npy"
-    file_path_fc_ls = "Code\\dimensionality_reduction\\SVD\\fc_ls.npy"
+    # file_path_cm_ls = "Code\dimensionality_reduction\SVD\cm_ls.npy"
+    file_path_cm_ls = os.path.join(ls_root_path, 'svd','cm_ls.npy')
+    # file_path_hog_ls = "Code\dimensionality_reduction\SVD\hog_ls.npy"
+    file_path_hog_ls = os.path.join(ls_root_path, 'svd','hog_ls.npy')
+    # file_path_fc_ls = "Code\\dimensionality_reduction\\SVD\\fc_ls.npy"
+    file_path_fc_ls = os.path.join(ls_root_path, 'svd','fc_ls.npy')
 
     np.savetxt(file_path_cm_ls, cm_ls, delimiter=",")
     np.savetxt(file_path_hog_ls, hog_ls, delimiter=",")

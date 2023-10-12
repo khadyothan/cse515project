@@ -1,9 +1,11 @@
+from file_paths import *
+import sys
+sys.path.append(code_dir)
+
 import pymongo
 import torchvision.datasets as datasets
 import torch
 import numpy as np
-import sys
-sys.path.append('C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code')
 
 def task3():
     
@@ -15,7 +17,7 @@ if __name__ == "__main__":
     collection = db["phase2trainingdataset"]
     collection_name = "phase2trainingdataset"
 
-    caltech101_directory = "C:/Khadyu/ASU/Fall 2023/Multimedia & Web Databases/Project/Phase1/data"
+    caltech101_directory = dataset_path
     dataset = datasets.Caltech101(caltech101_directory, download=False)
     data_loader = torch.utils.data.DataLoader(dataset, batch_size=4, shuffle=True, num_workers=8)
 

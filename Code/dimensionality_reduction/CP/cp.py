@@ -1,3 +1,5 @@
+from file_paths import *
+
 import numpy as np
 import pymongo
 import tensorly as tl
@@ -36,7 +38,7 @@ def calculateImageIDWeightPairs(file_path_ls):
         sorted_data = sorted(list_pair, key=lambda x: x[1])
         lS_pairs.append(sorted_data)
         
-        label_weights_path = "C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code\dimensionality_reduction\CP\sorted_label_weights_cm.txt"
+        label_weights_path = os.path.join(lblb_sim_root_path, 'sorted_label_weights_cm.txt')
         with open(label_weights_path, "w") as f:
             for i in range(len(lS_pairs)):
                 f.write(f"Latent Semantic {i + 1}:\n")
@@ -49,9 +51,10 @@ if __name__ == "__main__":
     collection = db["phase2trainingdataset"]
     collection_name = "phase2trainingdataset"
     
-    data_matrix = np.loadtxt("C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code\dimensionality_reduction\data_matrix_cm.csv", delimiter=',')     
+    # data_matrix = np.loadtxt("C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code\dimensionality_reduction\data_matrix_cm.csv", delimiter=',')     
+    data_matrix = np.loadtxt(os.path.join(data_matrix_root_path, 'data_matrix_cm.csv'), delimiter=',')     
     cm_ls = cp(data_matrix, 5)
-    file_path_cm_ls = "C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code\dimensionality_reduction\CP\cm_ls"
+    file_path_cm_ls = os.path.join(ls_root_path, 'cp', 'cm_ls')
     np.savetxt(file_path_cm_ls, cm_ls, delimiter=",")
     calculateImageIDWeightPairs(file_path_cm_ls)
     

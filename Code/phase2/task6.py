@@ -1,3 +1,5 @@
+from file_paths import *
+
 import pymongo
 import torch
 import torchvision.datasets as datasets
@@ -23,7 +25,8 @@ def task6():
                 image_similarity_matrix[j, i] = similarity 
             print(i, j)
             
-    file_path_cm = "C:/Khadyu/ASU/Fall 2023/Multimedia & Web Databases/Project/Phase2/cse515-project/Code/phase2/image_image_sm_fc.csv"
+    # file_path_cm = "C:/Khadyu/ASU/Fall 2023/Multimedia & Web Databases/Project/Phase2/cse515-project/Code/phase2/image_image_sm_fc.csv"
+    file_path_cm = os.path.join(imgimg_sim_root_path, 'image_image_sm_fc.csv')
     np.savetxt(file_path_cm, image_similarity_matrix, delimiter=",")
 
 if __name__ == "__main__":
@@ -32,7 +35,7 @@ if __name__ == "__main__":
     collection = db["phase2trainingdataset"]
     collection_name = "phase2trainingdataset"
 
-    caltech101_directory = "C:/Khadyu/ASU/Fall 2023/Multimedia & Web Databases/Project/Phase1/data"
+    caltech101_directory = dataset_path
     dataset = datasets.Caltech101(caltech101_directory, download=False)
     data_loader = torch.utils.data.DataLoader(dataset, batch_size=4, shuffle=True, num_workers=8)
 

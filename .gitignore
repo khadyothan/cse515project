@@ -1,9 +1,8 @@
+__pycache__/
+caltech101/
 *.csv
 *.npy
 *.txt
 *.pyc
 *.ipynb
 .DS_Store
-data/
-caltech101/
-__pycache__/

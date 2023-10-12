@@ -1,66 +1,110 @@
-import random
+from file_paths import *
+
 import numpy as np
 import pymongo
 
-def initialize_centroids(data, k):
-    centroids = random.sample(data.tolist(), k)
-    return centroids
+import numpy as np
+import os
+import random
 
-def initialize_centroids_kmeans_plus(data, k):
-    centroids = [random.choice(data.tolist())]
-    for _ in range(k - 1):
-        distances = [min([np.linalg.norm(point - centroid) for centroid in centroids]) for point in data]
-        next_centroid = random.choices(data.tolist(), weights=distances, k=1)
-        centroids.append(next_centroid[0])
-    return centroids
 
-def assign_to_clusters(data, centroids):
-    clusters = {i: [] for i in range(len(centroids))}
-    for point in data:
-        nearest_centroid_idx = min(range(len(centroids)), key=lambda i: abs(point - centroids[i]))
-        clusters[nearest_centroid_idx].append(point)
-    return clusters
-
-def update_centroids(clusters):
-    new_centroids = [sum(cluster) / len(cluster) if len(cluster) > 0 else 0 for cluster in clusters.values()]
-    return new_centroids
-
-def k_means(data, k, max_iterations, count):
-    print(count)
-    centroids = initialize_centroids(data, k)
-    for i in range(max_iterations):
-        clusters = assign_to_clusters(data, centroids)
-        new_centroids = update_centroids(clusters)
-        if new_centroids == centroids:
-            break  
-        centroids = new_centroids
-    return centroids
-
-def kmeans(data_matrix, k):
-    latent_semantics = []
-    count = 0
-    for row in data_matrix:
-        cluster_centroids = k_means(row, k, 100, count)
-        count+=1
-        latent_semantics.append(cluster_centroids)
-    data_matrix_ls = np.array(latent_semantics)
-
-    return data_matrix_ls
-
-def calculateImageIDWeightPairs(file_path_ls):
+def cluster_calc(x: list, cent_no: int):
     
-    return True
+    ##### from scratch
+    cent_temp = centroids = initialize_kmeans_plusplus(np.array(x), cent_no).tolist()
+    cluster_array = [[] for i in range(cent_no)]
+    repeat_flag = True
     
+    while repeat_flag:
+        cluster_array = [[] for i in range(cent_no)]
+        for i in x:
+            min_dist, min_j = vector_euclid(i, centroids[0]), 0
+            
+            for j in range(len(centroids)):
+                temp_dist = vector_euclid(i, centroids[j])
+                if temp_dist < min_dist:
+                    min_dist = temp_dist
+                    min_j = j
+
+            cluster_array[min_j].append(i)
+            
+        centroids = [np.mean(i, axis=0).tolist() for i in cluster_array]
+        
+        if centroid_check(cent_temp, centroids):
+            repeat_flag = False
+
+        cent_temp = centroids
+        
+    return centroids, cluster_array
+    
+
+def initialize_kmeans_plusplus(points, K, c_dist=np.linalg.norm):
+    centers = []
+    centers.append(points[np.random.randint(points.shape[0])])
+
+    for _ in range(1, K):
+        dist_sq = np.array([min([c_dist(c - x)**2 for c in centers]) for x in points])
+        probs = dist_sq/dist_sq.sum()
+        cumulative_probs = probs.cumsum()
+        r = np.random.rand()
+        
+        for j, p in enumerate(cumulative_probs):
+            if r < p:
+                i = j
+                break
+        
+        centers.append(points[i])
+
+    return np.array(centers)
+
+
+def vector_euclid(x, y):
+    return np.linalg.norm(np.array(x) - np.array(y))
+
+def centroid_check(prev, new):
+    return all(np.allclose(p, n) for p, n in zip(prev, new))
+
+def kmeans2(data_matrix, k):
+    centroids, cluster_array = cluster_calc(data_matrix, k)
+    print(f'shape of centroids: {np.array(centroids).shape}')
+    data_matrix_ls = []
+    for i in data_matrix:
+        temp = []
+        for j in centroids:
+            temp.append(vector_euclid(i, j))
+            # print(temp)
+        data_matrix_ls.append(temp)
+        # print(res)
+    # store_ls_kmeans(data_matrix_ls)
+    return np.array(data_matrix_ls)
+
+def kmeans_idweight_pairs(latent_matrix: np.ndarray) -> np.ndarray:
+    
+    res_matrix = []
+    for i in range(len(latent_matrix)):
+        res_matrix.append(i*2, weight_calc(latent_matrix[i]))
+    
+    return np.array(res_matrix)
+
+def weight_calc(vector: list)-> float:
+    return np.linalg.norm(vector)
+
+def store_ls_kmeans(x) -> None:
+    if not type(x)==np.ndarray:
+        x = np.array(x)
+    
+    store_path = os.path.join(ls_root_path, 'kmeans', 'cm_ls.csv')
+    np.savetxt(store_path, x, delimiter=',')
+
 if __name__ == "__main__":
     cl = pymongo.MongoClient("mongodb://localhost:27017")
     db = cl["caltech101db"]
     collection = db["phase2trainingdataset"]
     collection_name = "phase2trainingdataset"
     
-    data_matrix = np.loadtxt("C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code\dimensionality_reduction\data_matrix_cm.csv", delimiter=',')     
-    cm_ls = kmeans(data_matrix, 10)
+    # data_matrix = np.loadtxt("C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code\dimensionality_reduction\data_matrix_cm.csv", delimiter=',')     
+    data_matrix = np.loadtxt(os.path.join(data_matrix_root_path, 'data_matrix_cm.csv'), delimiter=',')     
+    cm_ls = kmeans2(data_matrix, 10)
     
-    file_path_cm_ls = "C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code\dimensionality_reduction\KMEANS\cm_ls"
+    file_path_cm_ls = os.path.join(ls_root_path, 'kmeans', 'latent_semantics_kmeans.csv')
     np.savetxt(file_path_cm_ls, cm_ls, delimiter=",")
-    # calculateImageIDWeightPairs(file_path_cm_ls)
-    

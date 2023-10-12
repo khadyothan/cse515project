@@ -4,6 +4,8 @@ import torchvision.datasets as datasets
 import numpy as np
 import torch
 
+from file_paths import *
+
 def store_representative_images():
 
     # representative_vectors_color_moments = {}
@@ -70,7 +72,7 @@ def store_representative_images():
         
         print(label)
 
-        
+
 if __name__ == "__main__":
     cl = pymongo.MongoClient("mongodb://localhost:27017")
     db = cl["caltech101db"]
@@ -79,7 +81,7 @@ if __name__ == "__main__":
     
     new_collection = db["labelrepresentativeimages"]
 
-    caltech101_directory = "C:/Khadyu/ASU/Fall 2023/Multimedia & Web Databases/Project/Phase1/data"
+    caltech101_directory = dataset_path
     dataset = datasets.Caltech101(caltech101_directory, download=False)
     data_loader = torch.utils.data.DataLoader(dataset, batch_size=4, shuffle=True, num_workers=8)
     store_representative_images()

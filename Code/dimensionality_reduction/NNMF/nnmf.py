@@ -13,9 +13,3 @@ def nnmf(data_matrix, k):
     data_matrix_ls = np.dot(U_reduced, S_reduced)
     print(data_matrix_ls.shape)
     return data_matrix_ls
-
-# cm_ls = nnmf("cm")
-# print(cm_ls.shape)
-
-# file_path_cm_ls = "Code\\dimensionality_reduction\\NNMF\\cm_ls.npy"
-# np.savetxt(file_path_cm_ls, cm_ls, delimiter=",")
