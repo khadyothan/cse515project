@@ -1,6 +1,8 @@
 *.csv
 *.npy
 *.txt
+*.pyc
+*.ipynb
 .DS_Store
 data/
 caltech101/

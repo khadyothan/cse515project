@@ -9,15 +9,6 @@ from sklearn.cluster import KMeans
 
 def cluster_calc(x: list, cent_no: int):
     
-    ##### using kmeans from sklearn
-    # res = KMeans(
-    #     n_clusters= cent_no,
-    #     random_state= 0,
-    #     n_init='auto'
-    # ).fit(x)
-    
-    # return res.cluster_centers_, res
-    
     ##### from scratch
     cent_temp = centroids = initialize_kmeans_plusplus(np.array(x), cent_no).tolist()
     # cent_temp = centroids = random.sample(x, cent_no)
@@ -70,30 +61,10 @@ def initialize_kmeans_plusplus(points, K, c_dist=np.linalg.norm):
 
 
 def vector_euclid(x, y):
-    # dumsum = 0
-    # for i,j in zip(x, y):
-    #     dumsum += (i - j)**2
-    # return np.sqrt(dumsum)
-    
     return np.linalg.norm(np.array(x) - np.array(y))
 
 def centroid_check(prev, new):
-    # flag = False
-    
-    # for i,j in zip(prev,new):
-    #     if not i==j:
-    #         flag= True
-    #         break
-        
-    # return flag
-    
     return all(np.allclose(p, n) for p, n in zip(prev, new))
-
-def store_ls_kmeans(x: list) -> None:
-    x = np.array(x)
-    
-    store_path = os.path.join(os.getcwd(),'Outputs/LatentSemantics/latent_semantics_kmeans.csv')
-    np.savetxt(store_path, x, delimiter=',')
 
 def kmeans2(data_matrix, k):
     centroids, cluster_array = cluster_calc(data_matrix, k)
@@ -109,6 +80,24 @@ def kmeans2(data_matrix, k):
     # store_ls_kmeans(data_matrix_ls)
     return np.array(data_matrix_ls)
 
+def kmeans_idweight_pairs(latent_matrix: np.ndarray) -> np.ndarray:
+    
+    res_matrix = []
+    for i in range(len(latent_matrix)):
+        res_matrix.append(i*2, weight_calc(latent_matrix[i]))
+    
+    return np.array(res_matrix)
+
+def weight_calc(vector: list)-> float:
+    return np.linalg.norm(vector)
+
+def store_ls_kmeans(x) -> None:
+    if not type(x)==np.ndarray:
+        x = np.array(x)
+    
+    store_path = os.path.join(os.getcwd(),'Outputs', 'latent_semantics', 'latent_semantics_kmeans.csv')
+    np.savetxt(store_path, x, delimiter=',')
+
 if __name__ == "__main__":
     cl = pymongo.MongoClient("mongodb://localhost:27017")
     db = cl["caltech101db"]
@@ -118,6 +107,6 @@ if __name__ == "__main__":
     data_matrix = np.loadtxt("C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code\dimensionality_reduction\data_matrix_cm.csv", delimiter=',')     
     cm_ls = kmeans2(data_matrix, 10)
     
-    file_path_cm_ls = "/Users/rohitbathi/Desktop/Masters/CSE_MWD/project/cse515project-master/Outputs/kmeans/cm_ls.csv"
+    file_path_cm_ls = os.path.join(os.getcwd(), 'Outputs', 'latent_semantics', 'latent_semantics_kmeans.csv')
     np.savetxt(file_path_cm_ls, cm_ls, delimiter=",")
     # calculateImageIDWeightPairs(file_path_cm_ls)
