@@ -9,14 +9,17 @@ def cp(data_matrix, k):
     weights,factors = tl.decomposition.parafac(data_tensor, rank=k, init='random')
     return factors[0]
 
-def calculateImageIDWeightPairs(file_path_ls):
-    ls_matrix = np.loadtxt(file_path_ls, delimiter=',')
+def calculateImageIDWeightPairs(cp_ls, query_feature_model, k, type):
+    cl = pymongo.MongoClient("mongodb://localhost:27017")
+    db = cl["caltech101db"]
+    collection = db["phase2trainingdataset"]
+    collection_name = "phase2trainingdataset"
     
+    ls_matrix = cp_ls
     image_labels = []
     for doc in collection.find():
         label = doc["label"]
-        image_labels.append(label)
-        
+        image_labels.append(label)  
     lS_pairs = []
     sum = 0
     count = 0
@@ -35,13 +38,13 @@ def calculateImageIDWeightPairs(file_path_ls):
         list_pair.append([label,sum])
         sorted_data = sorted(list_pair, key=lambda x: x[1])
         lS_pairs.append(sorted_data)
-        
-        label_weights_path = "C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code\dimensionality_reduction\CP\sorted_label_weights_cm.txt"
+        label_weights_path = f"C:\Khadyu\ASU\Fall 2023\Multimedia & Web Databases\Project\Phase2\cse515-project\Code\image_id_weight_pairs\CP\cp_{query_feature_model}_{k}_wp_{type}.txt"
         with open(label_weights_path, "w") as f:
             for i in range(len(lS_pairs)):
                 f.write(f"Latent Semantic {i + 1}:\n")
                 for j in range(len(lS_pairs[i])):
                     f.write(f"      Label {lS_pairs[i][j][0]}: {lS_pairs[i][j][1]}\n")
+    
     
 if __name__ == "__main__":
     cl = pymongo.MongoClient("mongodb://localhost:27017")

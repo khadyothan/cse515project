@@ -6,12 +6,6 @@ import torch
 
 def store_representative_images():
 
-    # representative_vectors_color_moments = {}
-    # representative_vectors_hog = {}
-    # representative_vectors_resnet50_layer3 = {}
-    # representative_vectors_resnet50_avgpool = {}
-    # representative_vectors_resnet50_fc = {}
-
     for label in range(101):
         label_images = list(collection.find({'label': label}))  # Convert the cursor to a list
         color_moments_vectors = []
