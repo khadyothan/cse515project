@@ -1,4 +1,4 @@
-from file_paths import *
+from Code.file_paths import *
 import sys
 sys.path.append(code_dir)
 

@@ -1,4 +1,5 @@
-from file_paths import *
+from Code.file_paths import *
+# import os
 import sys
 sys.path.append(code_dir)
 
@@ -21,8 +22,10 @@ import extracting_feature_space.HOG as HOG
 import extracting_feature_space.resnet_features as resnet_features
 
 def LS4(query_image_data, query_feature_model, dimredtech, k, K):
-
-    return True 
+    
+    
+    
+    pass
 
 def LS3(query_image_data, query_feature_model, dimredtech, k, K):
     query_image_vector, feature_model_data_file_path = None, None

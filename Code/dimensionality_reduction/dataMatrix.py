@@ -1,4 +1,4 @@
-from file_paths import *
+from Code.file_paths import *
 
 from matplotlib import pyplot as plt
 import pymongo 
