@@ -30,4 +30,6 @@ if __name__ == "__main__":
     print("1. SVD\n2. NNMF\n3. LDA\n4. k-means\n")
     
     dimredtech = input("Enter your choice: ")
+
+    
     
