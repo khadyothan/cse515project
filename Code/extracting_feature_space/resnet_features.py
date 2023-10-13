@@ -1,6 +1,7 @@
 import torch
 import torchvision.transforms as transforms
 from torchvision import models
+import torch.nn as nn
 
 # Function to get intermediate layer output using a hook
 def getHook(model, layer_name):
@@ -56,4 +57,9 @@ def resnet_features(image):
             fc_feature_descriptor = fc_outputs[0]
     
     # Return the extracted feature descriptors
-    return layer3_feature_descriptor[0].view(1024, -1).mean(dim=1).tolist(), avgpool_feature_descriptor[0].view(-1, 2).mean(dim=1).tolist(), fc_feature_descriptor[0].squeeze().tolist()
+
+    return layer3_feature_descriptor[0].view(1024, -1).mean(dim=1).tolist(), avgpool_feature_descriptor[0].view(-1, 2).mean(dim=1).tolist(), fc_feature_descriptor[0].squeeze().tolist(),
+
+def resnetSoftmax(fc_layer):
+    softmax = nn.Softmax(dim=1)
+    return softmax(fc_layer)
