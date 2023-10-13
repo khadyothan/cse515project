@@ -5,7 +5,7 @@ import torchvision.datasets as datasets
 
 cl = pymongo.MongoClient("mongodb://localhost:27017")
 db = cl["caltech101db"]
-collection = db["caltech101withGSimages"]
+collection = db["phase2trainingdataset"]
 
 caltech101_directory = "/Users/lalitarvind/Downloads/MWD_Team_project_v1/"
 dataset = datasets.Caltech101(caltech101_directory, download=True)

@@ -47,7 +47,7 @@ def kmeans(data_matrix, k):
 
     return data_matrix_ls
 
-def calculateImageIDWeightPairs(file_path_ls):
+def calculateImageIDWeightPairs(kmeans_ls, query_feature_model, k):
     
     return True
     

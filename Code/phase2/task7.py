@@ -11,6 +11,7 @@ import dimensionality_reduction.NNMF.nnmf as nnmf
 import dimensionality_reduction.CP.cp as cp
 import dimensionality_reduction.KMEANS.kmeans as kmeans
 import dimensionality_reduction.KMEANS.kmeans2 as kmeans2
+import dimensionality_reduction.LDA.lda as lda
 import phase2.task5 as task5
 import phase1.print_top_k_images as print_top_k_images
 import extracting_feature_space.color_moments as color_moments
@@ -107,6 +108,7 @@ def LS2(query_image_data, query_feature_model, k, K):
     similar_images = {}
     for i, distance in enumerate(distances):
         similar_images[i*2] = distance   
+    
     similar_images = dict(sorted(similar_images.items(), key=lambda x: x[1]))
     top_k_similar_images = dict(list(similar_images.items())[:K])
     images_to_display = {image_id: {'image': image, 'distance': top_k_similar_images[image_id]} for image_id, (image, label) in enumerate(dataset) if image_id in top_k_similar_images}
@@ -145,7 +147,7 @@ def LS1(query_image_data, query_feature_model, dimredtech, k, K):
     elif dimredtech == 2:
         latent_space_matrix = nnmf.nnmf(combined_matrix, k) 
     elif dimredtech == 3:
-        similar_images = {}  
+        latent_space_matrix = lda.lda(combined_matrix, "color_moments", k)
     elif dimredtech == 4:
         latent_space_matrix = kmeans2.kmeans2(feature_model_data_matrix, k)
     else:
