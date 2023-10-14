@@ -1,3 +1,4 @@
+from sklearn.metrics import pairwise_distances_argmin_min
 import torch
 import torchvision
 from torchvision.io import read_image
@@ -30,6 +31,7 @@ import extracting_feature_space.resnet_features as resnet_features
 client = MongoClient("localhost", 27017)
 DB = client["caltech101db"]
 collection = DB["caltech101withGSimages"]
+rep_collection=DB['labelrepresentativeimages']
 # dataset_path = "/Users/lalitarvind/Downloads/MWD_Team_project"
 dataset_path='../../data'
 dataset = torchvision.datasets.Caltech101(root = dataset_path,download = True)
@@ -75,6 +77,15 @@ dataset = torchvision.datasets.Caltech101(root = dataset_path,download = True)
 
 def LS1(query_image_data, query_feature_model, dimredtech, k, K):
     query_image_vector, feature_model_data_file_path = None, None
+    rep_keyname = {
+        "color_moments_feature_descriptor":["color_moments_rep_image","color_moments_image_id"],
+        "hog_feature_descriptor":["hog_rep_image","hog_image_id"],
+        "resnet50_layer3_feature_descriptor":["layer3_rep_image","layer3_image_id"],
+        "resnet50_avgpool_feature_descriptor":["avgpool_rep_image","avgpool_image_id"],
+        "resnet50_fc_feature_descriptor":["fc_rep_image","fc_image_id"],
+        "resnet_softmax_feature_descriptor":["resnet_softmax_rep_image","resnet_softmax_image_id"]
+    }
+
     if query_feature_model == "color_moments_feature_descriptor":
         query_image_vector = color_moments.color_moments(query_image_data)
         feature_model_data_file_path = "cm"
@@ -94,9 +105,24 @@ def LS1(query_image_data, query_feature_model, dimredtech, k, K):
             feature_model_data_file_path = "fc"
         else: 
             query_image_vector = resnet_features.resnetSoftmax(query_fc_vector)
-            feature_model_data_file_path = "softmax"
-    print(np.array(query_image_vector).shape)
-    return query_image_vector
+            feature_model_data_file_path = "sm"
+    query_image_vector = np.ravel(query_image_vector)
+    # print(np.array(query_image_vector).shape)
+    representatives = list(rep_collection.find({},{rep_keyname[query_feature_model][0]:1,
+                                                  rep_keyname[query_feature_model][1]:1,}))
+    # print(list(representative[0].keys()))
+    # exit(0)
+    if dimredtech == "svd":
+        feature_model_data_matrix = np.loadtxt(f"D:\Project Multimedia\\new_phase2_repo\cse515project\Code\data_matrix\data_matrix_{feature_model_data_file_path}.csv", delimiter=',')
+        combined_matrix = np.vstack((query_image_vector, feature_model_data_matrix))
+        datamatrix_ls=svd.svd(combined_matrix,k)
+        print(datamatrix_ls)
+        query_image_ls = datamatrix_ls[0]
+        print(representatives[0][rep_keyname[query_feature_model][1]]/2)
+        # representatives_ls = [datamatrix_ls[label_dict[rep_keyname[query_feature_model][1]]/2] for label_dict in representatives]
+        # print(representatives_ls)
+        exit(0)
+    # return query_image_vector
 def task8(query_image_id, query_image_file, query_latent_semantics, K):
     if query_image_id != None:
         for image_id, (image, label) in enumerate(dataset):
@@ -108,22 +134,25 @@ def task8(query_image_id, query_image_file, query_latent_semantics, K):
     
     print("\nSelect a feature model for the latent semantics(Select one among these): ")
     print("1. color_moments\n2. hog\n3. resnet50_layer3\n4. resnet50_avgpool\n5. resnet50_fc\n6. resnet_softmax\n\n")
-    query_feature_model = input("Enter input ")
+    # query_feature_model = input("Enter input ")
+    query_feature_model='color_moments'
     query_feature_model = str(query_feature_model) + "_feature_descriptor" 
     if query_latent_semantics != 2: #LS2 is CP decomposition
         print("Enter one of the following dimensional reduction techniques on the chosen feature model:\n")
         print("1. SVD\n2. NNMF\n3. LDA\n4. k-means\n")
-        dimredtech = int(input("Enter your choice number: "))
-    k = int(input("Enter k value for dimensionality reduction: "))
-    
+        # dimredtech = int(input("Enter your choice number: "))
+        dimredtech=1
+    # k = int(input("Enter k value for dimensionality reduction: "))
+    k=10
+    dimredtech_dict = {1:"svd",2:"nnmf",3:"lda",4:"k-means"}
     if query_latent_semantics == 1:
-        LS1(query_image_data, query_feature_model, dimredtech, k, K)
+        LS1(query_image_data, query_feature_model, dimredtech_dict[dimredtech], k, K)
     elif query_latent_semantics == 2:
         LS2(query_image_data, query_feature_model, k, K)
     elif query_latent_semantics == 3:
-        LS3(query_image_data, query_feature_model, dimredtech, k, K)
+        LS3(query_image_data, query_feature_model, dimredtech_dict[dimredtech], k, K)
     elif query_latent_semantics == 4:
-        LS4(query_image_data, query_feature_model, dimredtech, k, K)
+        LS4(query_image_data, query_feature_model, dimredtech_dict[dimredtech], k, K)
     else:
         print("Enter a valid latent semantics choice!!")
 
