@@ -2,6 +2,7 @@ import torch
 import torchvision.transforms as transforms
 from torchvision import models
 import torch.nn as nn
+import numpy as np
 
 # Function to get intermediate layer output using a hook
 def getHook(model, layer_name):
@@ -62,4 +63,5 @@ def resnet_features(image):
 
 def resnetSoftmax(fc_layer):
     softmax = nn.Softmax(dim=1)
-    return softmax(fc_layer)
+    
+    return softmax(torch.FloatTensor(fc_layer).reshape((-1,1))).detach().tolist()
